@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<body>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script language="javascript" type="text/javascript">
+    var flyCoordinates = [
+          { "x_axis": 74, "y_axis": 583,"x_Apos":20,"y_Apos":420,"x_Ipos":140,"y_Ipos":420,"x_Upos":20,"y_Upos":240,"x_Tpos":260,"y_Tpos":120,"x_Opos":200,"y_Opos":130, "radius": 20, "color" : "green" },
+          { "x_axis": 425, "y_axis": 84,"x_Apos":80,"y_Apos":320,"x_Ipos":140,"y_Ipos":360,"x_Upos":20,"y_Upos":140,"x_Tpos":300,"y_Tpos":120,"x_Opos":400,"y_Opos":50, "radius": 20, "color" : "purple"},
+          { "x_axis": 219, "y_axis": 27,"x_Apos":140,"y_Apos":220,"x_Ipos":140,"y_Ipos":300,"x_Upos":20,"y_Upos":40,"x_Tpos":420,"y_Tpos":120,"x_Opos":600,"y_Opos":130, "radius": 20, "color" : "yellow" },
+          { "x_axis": 740, "y_axis": 529,"x_Apos":200,"y_Apos":120,"x_Ipos":140,"y_Ipos":250,"x_Upos":60,"y_Upos":340,"x_Tpos":460,"y_Tpos":120,"x_Opos":700,"y_Opos":290, "radius": 20, "color" : "red"},
+          { "x_axis": 471, "y_axis": 509,"x_Apos":260,"y_Apos":20,"x_Ipos":140,"y_Ipos":200,"x_Upos":150,"y_Upos":440,"x_Tpos":380,"y_Tpos":120,"x_Opos":700,"y_Opos":450, "radius": 20, "color" : "orange" },
+          { "x_axis": 174, "y_axis": 93,"x_Apos":300,"y_Apos":120,"x_Ipos":140,"y_Ipos":160,"x_Upos":300,"y_Upos":440,"x_Tpos":380,"y_Tpos":180,"x_Opos":600,"y_Opos":610, "radius": 20, "color" : "red"},
+          { "x_axis": 133, "y_axis": 630,"x_Apos":370,"y_Apos":220,"x_Ipos":140,"y_Ipos":120,"x_Upos":340,"y_Upos":340,"x_Tpos":380,"y_Tpos":240,"x_Opos":400,"y_Opos":690, "radius": 20, "color" : "yellow" },
+          { "x_axis": 369, "y_axis": 623,"x_Apos":440,"y_Apos":320,"x_Ipos":140,"y_Ipos":80,"x_Upos":380,"y_Upos":240,"x_Tpos":380,"y_Tpos":300,"x_Opos":200,"y_Opos":610, "radius": 20, "color" : "purple"},
+          { "x_axis": 160, "y_axis": 294,"x_Apos":510,"y_Apos":420,"x_Ipos":140,"y_Ipos":20,"x_Upos":380,"y_Upos":140,"x_Tpos":380,"y_Tpos":360,"x_Opos":100,"y_Opos":450, "radius": 20, "color" : "green" },
+          { "x_axis": 487, "y_axis": 142,"x_Apos":255,"y_Apos":220,"x_Ipos":140,"y_Ipos":50,"x_Upos":380,"y_Upos":40,"x_Tpos":380,"y_Tpos":420,"x_Opos":100,"y_Opos":290, "radius": 20, "color" : "yellow"}];
+
+    var canvas =  d3.select("body")
+                    .append("svg")
+                    .attr("width", 900)
+                    .attr("height", 900);
+
+
+    xPremuto=false;
+    clickAbilitato=true; 
+    var setXPremuto= function(){xPremuto=true;};
+    var resetXPremuto= function(){xPremuto=false;};
+    window.addEventListener("keypress", setXPremuto, false);
+    window.addEventListener("keyup", resetXPremuto, false);
+    
+
+        /*
+        * init(word) restituisce l'array delle lettere maiuscole (configurazioni) ottenuto a partire
+        * dalla stringa word
+        * @word è la stringa delle posizioni delle mosche
+        */
+        function init(word){
+          return word.toUpperCase().split("");
+        }
+        
+
+        /*
+        * changePosI(durationTime,obj,pos,maxpos) sposta le mosche nelle varie configurazioni
+        * @durationTime indica la durata di ciascuno spostamento del gruppo @obj
+        * @obj è il gruppo di oggetti target dell'animazione (in questo caso le mosche)
+        * @pos è l'array con le configurazioni dello mosche ["A","I","U","T","O"]
+        * @maxpos è la posizione dell'ultimo oggetto all'interno del gruppo @obj
+        */
+        function changePosI(durationTime,obj,pos,maxpos){
+          nuovaPosizione=pos.shift(); 
+          obj
+          .transition()
+          .delay(function(d,i){
+              return 10*i;
+            })
+          .duration(durationTime)
+          .attr("x", function (d){
+            posX='x_'+nuovaPosizione+'pos';
+            return d[posX];
+          })
+          .attr("y", function(d) {
+          posY='y_'+nuovaPosizione+'pos';
+          return d[posY];
+          })
+          .on('end', function(d, i) {
+          var j=pos.length; 
+            if (i === (maxpos-1) && j>0) { 
+              changePosI(durationTime,obj,pos,maxpos);
+            }
+            //riabilito il click del mouse una volta finita l'animazione
+            if(i === (maxpos-1) && j==0){
+              resetPos(1000,obj,maxpos);
+            }
+          });
+        }
+        /*
+        * resetPos(durationTime,obj,maxpos) riporta le mosche alla loro posizione iniziale
+        * @durationTime indica la durata di ciascuno spostamento del gruppo @obj
+        * @obj è il gruppo di oggetti target dell'animazione (in questo caso le mosche)
+        * @maxpos è la posizione dell'ultimo oggetto all'interno del gruppo @obj
+        */
+        function resetPos(durationTime,obj,maxpos){
+            obj
+            .transition()
+            .delay(function(d,i){
+            return 10*i;
+            })
+            .duration(durationTime)
+            .attr("x", function(d) {
+                return d.x_axis;
+            })
+            .attr("y", function(d) {
+            return d.y_axis;
+            })  
+            .on('end', function(d, i) {
+                if(i===(maxpos-1)){
+                     clickAbilitato=true;
+                }
+            })
+        }
+        /*
+        * draw() rappresenta 10 mosche nell'area di disegno
+        * cliccando con il mouse su una di queste mosche mentre si tiene premuto il tasto x
+        * innescherà un'animazione, che porta le 10 mosche in 5 configurazioni diverse che ricordano
+        * le lettere "A","I","U","T","O" per poi tornare nella posizione iniziale.
+        * Eventuali interazioni con esse durante l'animazione non verranno recepite fino alla conclusione
+        * della stessa.
+        */
+        (function draw(){
+          //immagini
+          var images= canvas.selectAll("image")
+                      .data(flyCoordinates)
+                      .enter()
+                      .append("image")
+                      .attr("xlink:href", "https://stickeroid.com/uploads/pic/fx0n217l-full/d1bdcd83d97e9d6d62559616da348cd9e6b8ff80.png")
+                      .attr("x", function (d) { return d.x_axis; })
+                      .attr("y", function (d) { return d.y_axis; })
+                      .attr("width", "100")
+                      .attr("height", "100")
+                      .on("click",function(d,i){
+                       if(xPremuto && clickAbilitato){
+                          clickAbilitato=false;
+                          posizioni = init("aiuto");
+                          changePosI(1000,images,posizioni,9);
+                        }
+                       }); 
+          })();
+        </script>
+</body>
+</html>
