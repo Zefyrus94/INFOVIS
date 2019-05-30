@@ -10,6 +10,6 @@ somiglianti a lettere dell'alfabeto è descritta in formato json.
 
 Essendo un progetto in HTML e JS che utilizza la libreria D3.js, per eseguirlo è sufficiente scaricare il progetto ed aprire il file main.html con un qualsiasi web browser.
 Il seguente progetto è stato testato su Windows 10 su:
-Chrome 74
-Firefox 67
-Edge 44 on
+Chrome 74,
+Firefox 67,
+Edge 44
